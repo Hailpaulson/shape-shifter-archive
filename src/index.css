@@ -2,41 +2,64 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* 3D Model Library Design System - Modern, tech-forward aesthetic */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Core colors - Deep tech aesthetic with cyan accents */
+    --background: 224 15% 7%;
+    --foreground: 210 40% 98%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 224 20% 10%;
+    --card-foreground: 210 40% 98%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 224 25% 12%;
+    --popover-foreground: 210 40% 98%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Primary - Electric cyan */
+    --primary: 189 100% 56%;
+    --primary-foreground: 224 15% 7%;
+    --primary-glow: 189 100% 70%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Secondary - Deep slate */
+    --secondary: 217 32% 17%;
+    --secondary-foreground: 210 40% 98%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    /* Muted tones */
+    --muted: 217 25% 15%;
+    --muted-foreground: 215 20% 65%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    /* Accent - Purple highlight */
+    --accent: 270 95% 75%;
+    --accent-foreground: 224 15% 7%;
 
-    --destructive: 0 84.2% 60.2%;
+    --destructive: 0 84% 60%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 217 25% 20%;
+    --input: 217 25% 20%;
+    --ring: 189 100% 56%;
 
-    --radius: 0.5rem;
+    /* 3D Library specific colors */
+    --viewer-bg: 224 20% 8%;
+    --model-highlight: 189 100% 56%;
+    --grid-lines: 217 25% 25%;
+    
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(189 100% 56%), hsl(270 95% 75%));
+    --gradient-card: linear-gradient(145deg, hsl(224 25% 12%), hsl(217 32% 17%));
+    --gradient-hero: linear-gradient(180deg, hsl(224 15% 7%), hsl(224 20% 10%));
+    
+    /* Shadows and effects */
+    --shadow-glow: 0 0 40px hsl(189 100% 56% / 0.3);
+    --shadow-card: 0 8px 32px hsl(224 15% 4% / 0.4);
+    --shadow-model: 0 20px 60px hsl(189 100% 56% / 0.15);
+    
+    /* Animations */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+    --radius: 0.75rem;
 
     --sidebar-background: 0 0% 98%;
 

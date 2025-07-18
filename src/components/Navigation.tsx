@@ -1,22 +1,29 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Upload, User, Grid3X3, List, Filter } from "lucide-react";
+import { Search, Upload, User, Grid3X3, List, Filter, LogOut } from "lucide-react";
 import { useState } from "react";
+import { Link } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
+import UploadModal from "./UploadModal";
 
 interface NavigationProps {
   viewMode: 'grid' | 'list';
   onViewModeChange: (mode: 'grid' | 'list') => void;
   searchQuery: string;
   onSearchChange: (query: string) => void;
+  onModelsUpdate?: () => void;
 }
 
 export default function Navigation({ 
   viewMode, 
   onViewModeChange, 
   searchQuery, 
-  onSearchChange 
+  onSearchChange,
+  onModelsUpdate
 }: NavigationProps) {
   const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const [showUploadModal, setShowUploadModal] = useState(false);
+  const { user, signOut } = useAuth();
 
   return (
     <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
@@ -76,17 +83,42 @@ export default function Navigation({
               Filter
             </Button>
 
-            <Button variant="default" size="sm" className="bg-gradient-primary hover:opacity-90">
-              <Upload className="w-4 h-4 mr-2" />
-              Upload
-            </Button>
+            {user ? (
+              <>
+                <Button 
+                  variant="default" 
+                  size="sm" 
+                  className="bg-gradient-primary hover:opacity-90"
+                  onClick={() => setShowUploadModal(true)}
+                >
+                  <Upload className="w-4 h-4 mr-2" />
+                  Upload
+                </Button>
 
-            <Button variant="ghost" size="sm">
-              <User className="w-4 h-4" />
-            </Button>
+                <Button variant="ghost" size="sm" onClick={signOut}>
+                  <LogOut className="w-4 h-4" />
+                </Button>
+              </>
+            ) : (
+              <Button variant="default" size="sm" asChild>
+                <Link to="/auth">
+                  <User className="w-4 h-4 mr-2" />
+                  Sign In
+                </Link>
+              </Button>
+            )}
           </div>
         </div>
       </div>
+
+      <UploadModal 
+        isOpen={showUploadModal}
+        onClose={() => setShowUploadModal(false)}
+        onUploadComplete={() => {
+          onModelsUpdate?.();
+          setShowUploadModal(false);
+        }}
+      />
     </nav>
   );
 }

@@ -118,14 +118,14 @@ export default function ModelCard({
           {/* Actions */}
           <div className="flex items-center justify-between pt-2">
             <div className="flex items-center space-x-4 text-sm text-muted-foreground">
-              <button 
+            <button 
                 onClick={handleLike}
                 className={`flex items-center space-x-1 transition-colors hover:text-accent ${
                   isLiked ? 'text-accent' : ''
                 }`}
               >
                 <Heart className={`w-4 h-4 ${isLiked ? 'fill-current' : ''}`} />
-                <span>{likes + (isLiked ? 1 : 0)}</span>
+                <span>{likes}</span>
               </button>
               
               <div className="flex items-center space-x-1">

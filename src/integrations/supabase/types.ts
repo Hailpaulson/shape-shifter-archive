@@ -14,13 +14,135 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      model_likes: {
+        Row: {
+          created_at: string
+          id: string
+          model_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          model_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          model_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "model_likes_model_id_fkey"
+            columns: ["model_id"]
+            isOneToOne: false
+            referencedRelation: "models"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      models: {
+        Row: {
+          created_at: string
+          description: string | null
+          downloads_count: number | null
+          file_size: number | null
+          file_type: string | null
+          file_url: string
+          id: string
+          is_public: boolean | null
+          likes_count: number | null
+          tags: string[] | null
+          thumbnail_url: string | null
+          title: string
+          updated_at: string
+          user_id: string
+          views_count: number | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          downloads_count?: number | null
+          file_size?: number | null
+          file_type?: string | null
+          file_url: string
+          id?: string
+          is_public?: boolean | null
+          likes_count?: number | null
+          tags?: string[] | null
+          thumbnail_url?: string | null
+          title: string
+          updated_at?: string
+          user_id: string
+          views_count?: number | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          downloads_count?: number | null
+          file_size?: number | null
+          file_type?: string | null
+          file_url?: string
+          id?: string
+          is_public?: boolean | null
+          likes_count?: number | null
+          tags?: string[] | null
+          thumbnail_url?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+          views_count?: number | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          created_at: string
+          display_name: string | null
+          id: string
+          updated_at: string
+          user_id: string
+          username: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          updated_at?: string
+          user_id: string
+          username?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          updated_at?: string
+          user_id?: string
+          username?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      increment_model_downloads: {
+        Args: { model_id: string }
+        Returns: undefined
+      }
+      increment_model_views: {
+        Args: { model_id: string }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never

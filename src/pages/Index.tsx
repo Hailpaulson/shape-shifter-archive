@@ -1,104 +1,33 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Upload, Search, Box } from "lucide-react";
+import { Link } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import ModelCard from "@/components/ModelCard";
 import ModelViewer from "@/components/ModelViewer";
+import { useModels } from "@/hooks/useModels";
+import { useAuth } from "@/hooks/useAuth";
 import heroImage from "@/assets/hero-3d-library.jpg";
-
-// Sample data for demonstration
-const sampleModels = [
-  {
-    id: "1",
-    title: "Futuristic Robot",
-    author: "TechDesigner",
-    tags: ["robot", "sci-fi", "character"],
-    downloads: 1234,
-    likes: 89,
-    views: 5670,
-    isOwner: true
-  },
-  {
-    id: "2", 
-    title: "Modern Chair",
-    author: "FurnitureStudio",
-    tags: ["furniture", "modern", "chair"],
-    downloads: 567,
-    likes: 45,
-    views: 2340,
-    isOwner: false
-  },
-  {
-    id: "3",
-    title: "Space Station",
-    author: "SciFiWorld",
-    tags: ["space", "architecture", "sci-fi"],
-    downloads: 892,
-    likes: 156,
-    views: 4520,
-    isOwner: false
-  },
-  {
-    id: "4",
-    title: "Vintage Car",
-    author: "AutoModeler",
-    tags: ["vehicle", "vintage", "transport"],
-    downloads: 1789,
-    likes: 234,
-    views: 8910,
-    isOwner: true
-  },
-  {
-    id: "5",
-    title: "Fantasy Sword",
-    author: "FantasyForge",
-    tags: ["weapon", "fantasy", "medieval"],
-    downloads: 445,
-    likes: 67,
-    views: 1890,
-    isOwner: false
-  },
-  {
-    id: "6",
-    title: "Abstract Sculpture",
-    author: "ArtisticVision",
-    tags: ["art", "abstract", "sculpture"],
-    downloads: 223,
-    likes: 34,
-    views: 1120,
-    isOwner: false
-  }
-];
 
 const Index = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [searchQuery, setSearchQuery] = useState('');
-  const [filteredModels, setFilteredModels] = useState(sampleModels);
+  const { models, loading, refetch, toggleLike, downloadModel, incrementViews } = useModels();
+  const { user } = useAuth();
 
   // Filter models based on search query
-  const handleSearchChange = (query: string) => {
-    setSearchQuery(query);
-    if (query.trim() === '') {
-      setFilteredModels(sampleModels);
+  const filteredModels = useMemo(() => {
+    if (searchQuery.trim() === '') {
+      return models;
     } else {
-      const filtered = sampleModels.filter(model => 
-        model.title.toLowerCase().includes(query.toLowerCase()) ||
-        model.author.toLowerCase().includes(query.toLowerCase()) ||
-        model.tags.some(tag => tag.toLowerCase().includes(query.toLowerCase()))
+      return models.filter(model => 
+        model.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        model.profiles?.display_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        model.profiles?.username?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        model.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
       );
-      setFilteredModels(filtered);
     }
-  };
-
-  const handleDownload = (id: string) => {
-    console.log('Downloading model:', id);
-    // Will implement actual download functionality with Supabase
-  };
-
-  const handleLike = (id: string) => {
-    console.log('Liking model:', id);
-    // Will implement actual like functionality with Supabase
-  };
+  }, [models, searchQuery]);
 
   const handleEdit = (id: string) => {
     console.log('Editing model:', id);
@@ -111,7 +40,8 @@ const Index = () => {
         viewMode={viewMode}
         onViewModeChange={setViewMode}
         searchQuery={searchQuery}
-        onSearchChange={handleSearchChange}
+        onSearchChange={setSearchQuery}
+        onModelsUpdate={refetch}
       />
 
       {/* Hero Section */}
@@ -135,10 +65,19 @@ const Index = () => {
             </div>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <Button variant="hero" size="lg" className="min-w-[200px]">
-                <Upload className="mr-2" />
-                Upload Your Model
-              </Button>
+              {user ? (
+                <Button variant="hero" size="lg" className="min-w-[200px]">
+                  <Upload className="mr-2" />
+                  Upload Your Model
+                </Button>
+              ) : (
+                <Button variant="hero" size="lg" className="min-w-[200px]" asChild>
+                  <Link to="/auth">
+                    <Upload className="mr-2" />
+                    Sign In to Upload
+                  </Link>
+                </Button>
+              )}
               <Button variant="outline" size="lg" className="min-w-[200px]">
                 <Search className="mr-2" />
                 Explore Library
@@ -238,31 +177,47 @@ const Index = () => {
             <h2 className="text-3xl font-bold">
               {searchQuery ? `Search Results (${filteredModels.length})` : 'Featured Models'}
             </h2>
-            
-            {filteredModels.length === 0 && searchQuery && (
-              <div className="text-center py-12">
-                <p className="text-muted-foreground text-lg">
-                  No models found for "{searchQuery}"
-                </p>
-              </div>
-            )}
           </div>
 
-          <div className={`grid gap-6 ${
-            viewMode === 'grid' 
-              ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4' 
-              : 'grid-cols-1'
-          }`}>
-            {filteredModels.map((model) => (
-              <ModelCard
-                key={model.id}
-                {...model}
-                onDownload={handleDownload}
-                onLike={handleLike}
-                onEdit={handleEdit}
-              />
-            ))}
-          </div>
+          {loading ? (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground text-lg">Loading models...</p>
+            </div>
+          ) : filteredModels.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground text-lg">
+                {searchQuery ? `No models found for "${searchQuery}"` : 'No models uploaded yet. Be the first to share your creations!'}
+              </p>
+              {!user && !searchQuery && (
+                <Button className="mt-4" asChild>
+                  <Link to="/auth">Sign In to Upload Models</Link>
+                </Button>
+              )}
+            </div>
+          ) : (
+            <div className={`grid gap-6 ${
+              viewMode === 'grid' 
+                ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4' 
+                : 'grid-cols-1'
+            }`}>
+              {filteredModels.map((model) => (
+                <ModelCard
+                  key={model.id}
+                  id={model.id}
+                  title={model.title}
+                  author={model.profiles?.display_name || model.profiles?.username || 'Anonymous'}
+                  tags={model.tags}
+                  downloads={model.downloads_count}
+                  likes={model.likes_count}
+                  views={model.views_count}
+                  isOwner={model.is_owner}
+                  onDownload={() => downloadModel(model.id)}
+                  onLike={() => toggleLike(model.id)}
+                  onEdit={handleEdit}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
@@ -283,7 +238,7 @@ const Index = () => {
           </p>
           
           <p className="text-sm text-muted-foreground">
-            Ready to integrate with Supabase for authentication, database, and file storage
+            {user ? `Welcome back, ${user.email}!` : 'Join our community of 3D creators'}
           </p>
         </div>
       </footer>
